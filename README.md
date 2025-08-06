@@ -85,6 +85,14 @@ Delete a rule.
 
 Get all transactions associated with a specific rule.
 
+#### GET /rules/cache/stats
+
+Get cache statistics (number of keys, key names).
+
+#### POST /rules/cache/clear
+
+Clear all cached data.
+
 ### Transactions
 
 #### GET /transactions/all
@@ -171,7 +179,30 @@ Get all transactions associated with a specific rule.
    ```bash
    npm install
    ```
-3. Start the development server:
+3. Set up Redis (required for caching):
+
+   ```bash
+   # Install Redis (macOS)
+   brew install redis
+
+   # Start Redis
+   brew services start redis
+
+   # Or run Redis manually
+   redis-server
+   ```
+
+4. Configure environment variables (optional):
+
+   ```bash
+   # Copy example environment file
+   cp .env.example .env
+
+   # Edit .env file to customize Redis URL if needed
+   REDIS_URL=redis://localhost:6379
+   ```
+
+5. Start the development server:
    ```bash
    npm run dev
    ```
@@ -198,6 +229,33 @@ The API includes comprehensive error handling:
 - Not found errors return 404 status
 - Database errors are properly handled and logged
 - Batch operations return detailed success/failure information
+
+## Caching
+
+The API includes Redis-based caching for improved performance:
+
+### Cache Features
+
+- **Automatic Caching**: GET requests for rules are automatically cached
+- **Cache Invalidation**: Cache is automatically invalidated when rules are created, updated, or deleted
+- **TTL Support**: Cached data expires after 5 minutes by default
+- **Pattern-based Invalidation**: Cache invalidation uses pattern matching to clear related cache entries
+
+### Cache Configuration
+
+- **Redis URL**: Configure via `REDIS_URL` environment variable (default: `redis://localhost:6379`)
+- **Cache TTL**: 5 minutes for rule data
+- **Cache Keys**:
+  - `rules:all` - All rules cache
+  - `rules:id:*` - Individual rule cache (future implementation)
+
+### Cache Behavior
+
+- **GET /rules/all**: Returns cached data if available, otherwise fetches from database and caches
+- **POST/PUT/DELETE /rules**: Automatically invalidates all rule-related cache entries
+- **Graceful Degradation**: If Redis is unavailable, the API continues to work without caching
+- **Connection Monitoring**: Automatic detection of Redis connection status
+- **Error Handling**: Cache failures are logged but don't affect API functionality
 
 ## Testing
 
