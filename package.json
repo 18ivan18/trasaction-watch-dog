@@ -1,11 +1,9 @@
 {
-  "name": "test",
+  "name": "trasaction-watch-dog",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Ethereum transaction monitoring system with dynamic configuration",
   "scripts": {
     "dev": "tsx --watch --env-file .env src/index.ts",
-    "start": "node dist/index.js",
     "monitor": "tsx --env-file .env src/monitoring/monitor.ts",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
@@ -14,6 +12,7 @@
     "format:check": "prettier --check .",
     "prepare": "husky",
     "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/index.js",
     "test": "vitest",
     "test:run": "vitest --run",
     "test:ui": "vitest --ui",
@@ -32,12 +31,19 @@
     ]
   },
   "type": "module",
-  "keywords": [],
+  "keywords": [
+    "ethereum",
+    "blockchain",
+    "transactions",
+    "monitoring"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@types/redis": "^4.0.11",
     "@types/sequelize": "^6.12.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "awilix": "^12.0.5",
     "awilix-express": "^9.0.2",
     "axios": "^1.7.9",
@@ -48,6 +54,8 @@
     "redis": "^5.8.0",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "zod": "^4.0.15"
   },
   "devDependencies": {
