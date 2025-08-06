@@ -123,7 +123,14 @@ Create a single transaction with optional rule associations.
 
 #### POST /transactions/batch
 
-Insert multiple transactions at once.
+Insert multiple transactions at once using optimized bulk operations.
+
+**Features:**
+
+- Uses Sequelize's `bulkCreate` for efficient batch insertion
+- Creates pivot table entries in bulk for rule associations
+- Wrapped in a database transaction for data consistency
+- If any transaction fails, the entire batch is rolled back
 
 **Request Body:**
 
@@ -137,9 +144,7 @@ Insert multiple transactions at once.
       "nonce": 2,
       "gasLimit": "21000",
       "gasPrice": "20000000000",
-      "data": "0x",
       "value": "500000000000000000",
-      "chainId": 1,
       "type": 0,
       "ruleIds": [1]
     }

@@ -15,6 +15,7 @@ import {
   ValidatedBodyRequest,
   ValidatedParamsRequest,
 } from "../types/validated-request.js";
+import { RuleIdRequest, ruleIdSchema } from "../schemas/rule.schemas.js";
 
 @route("/transactions")
 export class TransactionController {
@@ -50,5 +51,18 @@ export class TransactionController {
       req.body,
     );
     return res.status(201).json(result);
+  }
+
+  @route("/rule/:id")
+  @GET()
+  @ValidateParams(ruleIdSchema)
+  async getTransactionsByRuleId(
+    req: ValidatedParamsRequest<RuleIdRequest>,
+    res: Response,
+  ) {
+    const id = req.params.id;
+    const transactions =
+      await this.transactionService.getTransactionsByRuleId(id);
+    return res.json(transactions);
   }
 }

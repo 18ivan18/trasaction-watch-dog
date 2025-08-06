@@ -65,28 +65,10 @@ GET http://localhost:3000/transactions/all
 # Get transaction by ID
 GET http://localhost:3000/transactions/1
 
-# Get transaction by hash
-GET http://localhost:3000/transactions/hash/0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+### 
 
-# Create a single transaction
-POST http://localhost:3000/transactions
-Content-Type: application/json
 
-{
-  "hash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-  "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6",
-  "from": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b7",
-  "nonce": 1,
-  "gasLimit": "21000",
-  "gasPrice": "20000000000",
-  "data": "0x",
-  "value": "1000000000000000000",
-  "chainId": 1,
-  "type": 0,
-  "ruleIds": [1, 2]
-}
-
-# Batch insert transactions
+# Batch insert transactions (optimized with bulk operations)
 POST http://localhost:3000/transactions/batch
 Content-Type: application/json
 
@@ -99,9 +81,7 @@ Content-Type: application/json
       "nonce": 2,
       "gasLimit": "21000",
       "gasPrice": "20000000000",
-      "data": "0x",
       "value": "500000000000000000",
-      "chainId": 1,
       "type": 0,
       "ruleIds": [1]
     },
@@ -112,27 +92,25 @@ Content-Type: application/json
       "nonce": 3,
       "gasLimit": "21000",
       "gasPrice": "20000000000",
-      "data": "0x",
       "value": "750000000000000000",
-      "chainId": 1,
       "type": 0,
       "ruleIds": [2]
+    },
+    {
+      "hash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+      "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b2",
+      "from": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b3",
+      "nonce": 4,
+      "gasLimit": "21000",
+      "gasPrice": "20000000000",
+      "value": "1000000000000000000",
+      "type": 0,
+      "ruleIds": [1, 2]
     }
   ]
 }
 
-# Update a transaction
-PUT http://localhost:3000/transactions/1
-Content-Type: application/json
-
-{
-  "value": "1500000000000000000",
-  "gasPrice": "25000000000",
-  "ruleIds": [1]
-}
-
-# Delete a transaction
-DELETE http://localhost:3000/transactions/1
+### 
 
 # Get transactions by rule ID
 GET http://localhost:3000/transactions/rule/1 
