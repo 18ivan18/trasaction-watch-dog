@@ -20,9 +20,11 @@ export function ValidateRequest(
       res: Response,
       next: NextFunction,
     ) {
-      console.log(req[type]);
-      // Validate the request using the schema
-      schema.parse(req[type]);
+      // Validate and transform the request data
+      const validatedData = schema.parse(req[type]);
+
+      // Cast the validated data back to the request
+      req[type] = validatedData;
 
       // If validation passes, call the original method
       return await originalMethod.call(this, req, res, next);
@@ -30,4 +32,17 @@ export function ValidateRequest(
 
     return descriptor;
   };
+}
+
+// Convenience decorators for specific validation types
+export function ValidateBody(schema: z.ZodSchema) {
+  return ValidateRequest(schema, "body");
+}
+
+export function ValidateParams(schema: z.ZodSchema) {
+  return ValidateRequest(schema, "params");
+}
+
+export function ValidateQuery(schema: z.ZodSchema) {
+  return ValidateRequest(schema, "query");
 }
