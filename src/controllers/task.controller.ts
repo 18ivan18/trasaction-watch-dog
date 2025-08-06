@@ -1,6 +1,12 @@
 import { GET, POST, PUT, DELETE, route } from "awilix-express";
 import { Request, Response } from "express";
 import { TaskService } from "../services/task.service.js";
+import { ValidateRequest } from "../decorators/validation.decorator.js";
+import {
+  createTaskSchema,
+  updateTaskSchema,
+  taskIdSchema,
+} from "../schemas/task.schemas.js";
 
 @route("/tasks")
 export class TaskController {
@@ -15,52 +21,38 @@ export class TaskController {
 
   @route("/:id")
   @GET()
+  @ValidateRequest(taskIdSchema, "params")
   async getTaskById(req: Request, res: Response) {
-    try {
-      const id = parseInt(req.params.id);
-      const task = await this.taskService.getTaskById(id);
-      return res.json(task);
-    } catch (error) {
-      return res.status(404).json({ error: (error as Error).message });
-    }
+    const id = parseInt(req.params.id);
+    const task = await this.taskService.getTaskById(id);
+    return res.json(task);
   }
 
   @POST()
+  @ValidateRequest(createTaskSchema, "body")
   async createTask(req: Request, res: Response) {
-    try {
-      const { name, done = false } = req.body;
-      if (!name) {
-        return res.status(400).json({ error: "Name is required" });
-      }
-      const task = await this.taskService.createTask(name, done);
-      return res.status(201).json(task);
-    } catch (error) {
-      return res.status(500).json({ error: (error as Error).message });
-    }
+    const { name, done = false } = req.body;
+    const task = await this.taskService.createTask(name, done);
+    return res.status(201).json(task);
   }
 
   @route("/:id")
   @PUT()
+  @ValidateRequest(updateTaskSchema, "body")
+  @ValidateRequest(taskIdSchema, "params")
   async updateTask(req: Request, res: Response) {
-    try {
-      const id = parseInt(req.params.id);
-      const { name, done } = req.body;
-      const task = await this.taskService.updateTask(id, { name, done });
-      return res.json(task);
-    } catch (error) {
-      return res.status(404).json({ error: (error as Error).message });
-    }
+    const id = parseInt(req.params.id);
+    const { name, done } = req.body;
+    const task = await this.taskService.updateTask(id, { name, done });
+    return res.json(task);
   }
 
   @route("/:id")
   @DELETE()
+  @ValidateRequest(taskIdSchema, "params")
   async deleteTask(req: Request, res: Response) {
-    try {
-      const id = parseInt(req.params.id);
-      const result = await this.taskService.deleteTask(id);
-      return res.json(result);
-    } catch (error) {
-      return res.status(404).json({ error: (error as Error).message });
-    }
+    const id = parseInt(req.params.id);
+    const result = await this.taskService.deleteTask(id);
+    return res.json(result);
   }
 }

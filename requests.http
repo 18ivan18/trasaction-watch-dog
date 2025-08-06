@@ -21,3 +21,67 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:3000/tasks/1
+
+### Test Task Creation with Validation
+
+### Valid task creation
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "name": "Test Task",
+  "done": false
+}
+
+### Invalid task creation - missing name
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "done": false
+}
+
+### Invalid task creation - empty name
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "name": "",
+  "done": false
+}
+
+### Test Task Update with Validation
+
+### Valid task update
+PUT http://localhost:3000/tasks/2
+Content-Type: application/json
+
+{
+  "name": "Updated Task",
+  "done": true
+}
+
+### Invalid task update - invalid ID
+PUT http://localhost:3000/tasks/abc
+Content-Type: application/json
+
+{
+  "name": "Updated Task",
+  "done": true
+}
+
+### Test Task Retrieval with Validation
+
+### Valid task retrieval
+GET http://localhost:3000/tasks/2
+
+### Invalid task retrieval - invalid ID
+GET http://localhost:3000/tasks/abc
+
+### Test Task Deletion with Validation
+
+### Valid task deletion
+DELETE http://localhost:3000/tasks/1
+
+### Invalid task deletion - invalid ID
+DELETE http://localhost:3000/tasks/abc 

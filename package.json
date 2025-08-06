@@ -41,7 +41,8 @@
     "awilix-express": "^9.0.2",
     "express": "^5.1.0",
     "sequelize": "^6.37.7",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "zod": "^4.0.15"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
