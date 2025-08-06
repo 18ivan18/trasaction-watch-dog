@@ -52,11 +52,7 @@ function matchTransactionToRules(
     }
 
     // Check toAddress
-    if (
-      rule.toAddress &&
-      transaction.to &&
-      transaction.to.toLowerCase() !== rule.toAddress.toLowerCase()
-    ) {
+    if (rule.toAddress && transaction.to && transaction.to !== rule.toAddress) {
       console.log(
         `Transaction ${transaction.hash} does not match rule ${rule.id} for toAddress`,
       );
@@ -191,10 +187,9 @@ async function processBlockTransactions(
 
   // 6. If the maximum block delay is reached, send the block hash to the main thread
   // it'll pop the block from the queue
-
   if (
     applicableRules[0].blockDelay ===
-    allRules.sort((a, b) => a.blockDelay - b.blockDelay)[0].blockDelay
+    allRules.sort((a, b) => b.blockDelay - a.blockDelay)[0].blockDelay
   ) {
     parentPort?.postMessage({ blockNumber: workerData.blockNumber });
   }

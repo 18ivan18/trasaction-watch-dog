@@ -16,6 +16,7 @@ export const createOrUpdateRuleSchema = z
     nonce: z.number().int().positive().optional(),
     gasPrice: z.number().optional(),
     gasLimit: z.number().optional(),
+    blockDelay: z.number().optional(),
   })
   .refine(
     (data) => {

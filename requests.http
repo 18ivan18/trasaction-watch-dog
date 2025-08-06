@@ -14,8 +14,8 @@ POST http://localhost:3000/rules
 Content-Type: application/json
 
 {
-  "valueFrom": 0,
-  "valueTo": 2000000000000000000
+  "fromAddress": "0xdadB0d80178819F2319190D340ce9A924f783711",
+  "blockDelay": 3
 }
 
 ###
@@ -32,24 +32,13 @@ Content-Type: application/json
 
 ###
 
-# Update a rule
-PUT http://localhost:3000/rules/1
-Content-Type: application/json
-
-{
-  "value": "5000000000000000000",
-  "gasPrice": "25000000000"
-}
-
-###
-
 # Delete a rule
-DELETE http://localhost:3000/rules/3
+DELETE http://localhost:3000/rules/1
 
 ###
 
 # Get transactions by rule ID (with pagination)
-GET http://localhost:3000/rules/1/transactions
+GET http://localhost:3000/rules/2/transactions
 
 ###
 
