@@ -1,0 +1,23 @@
+GET http://localhost:3000/tasks/all
+
+###
+
+GET http://localhost:3000/tasks/1
+
+###
+
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{"name": "Learn Docker", "done": false}
+
+### 
+
+PUT http://localhost:3000/tasks/1
+Content-Type: application/json
+
+{"name": "Learn Docker", "done": true}
+
+###
+
+DELETE http://localhost:3000/tasks/1

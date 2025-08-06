@@ -6,14 +6,16 @@ import { __dirname } from "./utils.js";
 const app = express();
 const port = process.env.PORT || "3000";
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-  console.log("Response sent");
-});
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-loadContainer(app);
-app.use(loadControllers("controllers/*.ts", { cwd: __dirname }));
+// Initialize container and start server
+(async () => {
+  await loadContainer(app);
+  app.use(loadControllers("controllers/*.ts", { cwd: __dirname }));
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+  app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
+  });
+})();
