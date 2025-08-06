@@ -1,7 +1,8 @@
 import { asClass, createContainer } from "awilix";
 import { scopePerRequest } from "awilix-express";
 import type { Application } from "express";
-import { TaskService } from "./services/task.service.js";
+import { RuleService } from "./services/rule.service.js";
+import { TransactionService } from "./services/transaction.service.js";
 import { DatabaseService } from "./services/database.service.js";
 
 export const loadContainer = async (app: Application) => {
@@ -11,7 +12,8 @@ export const loadContainer = async (app: Application) => {
 
   Container.register({
     databaseService: asClass(DatabaseService).singleton(),
-    taskService: asClass(TaskService).singleton(),
+    ruleService: asClass(RuleService).singleton(),
+    transactionService: asClass(TransactionService).singleton(),
   });
 
   // Initialize database

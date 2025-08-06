@@ -1,87 +1,138 @@
-GET http://localhost:3000/tasks/all
+### Rule Endpoints ###
 
-###
-
-GET http://localhost:3000/tasks/1
-
-###
-
-POST http://localhost:3000/tasks
-Content-Type: application/json
-
-{"name": "Learn Docker", "done": false}
+# Get all rules
+GET http://localhost:3000/rules/all
 
 ### 
 
-PUT http://localhost:3000/tasks/1
-Content-Type: application/json
-
-{"name": "Learn Docker", "done": true}
+GET http://localhost:3000/rules/1
 
 ###
 
-DELETE http://localhost:3000/tasks/1
-
-### Test Task Creation with Validation
-
-### Valid task creation
-POST http://localhost:3000/tasks
+# Create a new rule (at least one property required)
+POST http://localhost:3000/rules
 Content-Type: application/json
 
 {
-  "name": "Test Task",
-  "done": false
+  "fromAddress": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6",
+  "toAddress": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b7",
+  "value": "1000000000000000000",
+  "gasPrice": "20000000000"
 }
 
-### Invalid task creation - missing name
-POST http://localhost:3000/tasks
+###
+
+# Create another rule
+POST http://localhost:3000/rules
 Content-Type: application/json
 
 {
-  "done": false
+  "fromAddress": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b8",
+  "nonce": 5,
+  "gasLimit": "21000"
 }
 
-### Invalid task creation - empty name
-POST http://localhost:3000/tasks
+###
+
+# Update a rule
+PUT http://localhost:3000/rules/1
 Content-Type: application/json
 
 {
-  "name": "",
-  "done": false
+  "value": "5000000000000000000",
+  "gasPrice": "25000000000"
 }
 
-### Test Task Update with Validation
+###
 
-### Valid task update
-PUT http://localhost:3000/tasks/2
+# Delete a rule
+DELETE http://localhost:3000/rules/3
+
+###
+
+# Get transactions by rule ID
+GET http://localhost:3000/rules/1/transactions
+
+###
+
+### Transaction Endpoints ###
+
+# Get all transactions
+GET http://localhost:3000/transactions/all
+
+###
+
+# Get transaction by ID
+GET http://localhost:3000/transactions/1
+
+# Get transaction by hash
+GET http://localhost:3000/transactions/hash/0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+
+# Create a single transaction
+POST http://localhost:3000/transactions
 Content-Type: application/json
 
 {
-  "name": "Updated Task",
-  "done": true
+  "hash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6",
+  "from": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b7",
+  "nonce": 1,
+  "gasLimit": "21000",
+  "gasPrice": "20000000000",
+  "data": "0x",
+  "value": "1000000000000000000",
+  "chainId": 1,
+  "type": 0,
+  "ruleIds": [1, 2]
 }
 
-### Invalid task update - invalid ID
-PUT http://localhost:3000/tasks/abc
+# Batch insert transactions
+POST http://localhost:3000/transactions/batch
 Content-Type: application/json
 
 {
-  "name": "Updated Task",
-  "done": true
+  "transactions": [
+    {
+      "hash": "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+      "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b8",
+      "from": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9",
+      "nonce": 2,
+      "gasLimit": "21000",
+      "gasPrice": "20000000000",
+      "data": "0x",
+      "value": "500000000000000000",
+      "chainId": 1,
+      "type": 0,
+      "ruleIds": [1]
+    },
+    {
+      "hash": "0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+      "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b0",
+      "from": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b1",
+      "nonce": 3,
+      "gasLimit": "21000",
+      "gasPrice": "20000000000",
+      "data": "0x",
+      "value": "750000000000000000",
+      "chainId": 1,
+      "type": 0,
+      "ruleIds": [2]
+    }
+  ]
 }
 
-### Test Task Retrieval with Validation
+# Update a transaction
+PUT http://localhost:3000/transactions/1
+Content-Type: application/json
 
-### Valid task retrieval
-GET http://localhost:3000/tasks/2
+{
+  "value": "1500000000000000000",
+  "gasPrice": "25000000000",
+  "ruleIds": [1]
+}
 
-### Invalid task retrieval - invalid ID
-GET http://localhost:3000/tasks/abc
+# Delete a transaction
+DELETE http://localhost:3000/transactions/1
 
-### Test Task Deletion with Validation
-
-### Valid task deletion
-DELETE http://localhost:3000/tasks/1
-
-### Invalid task deletion - invalid ID
-DELETE http://localhost:3000/tasks/abc 
+# Get transactions by rule ID
+GET http://localhost:3000/transactions/rule/1 

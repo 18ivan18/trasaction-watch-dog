@@ -1,5 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
+import {
+  NotFoundError,
+  ValidationError,
+  ConflictError,
+} from "../types/errors.js";
 
 export const errorHandler = (
   error: Error,
@@ -17,6 +22,30 @@ export const errorHandler = (
         field: issue.path.join("."),
         message: issue.message,
       })),
+    });
+  }
+
+  // Handle custom errors
+  if (error instanceof NotFoundError) {
+    return res.status(error.statusCode).json({
+      error: "Not Found",
+      message: error.message,
+      resource: error.resource,
+    });
+  }
+
+  if (error instanceof ValidationError) {
+    return res.status(error.statusCode).json({
+      error: "Validation Error",
+      message: error.message,
+      field: error.field,
+    });
+  }
+
+  if (error instanceof ConflictError) {
+    return res.status(error.statusCode).json({
+      error: "Conflict",
+      message: error.message,
     });
   }
 
