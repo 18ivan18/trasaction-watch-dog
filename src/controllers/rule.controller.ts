@@ -4,6 +4,7 @@ import { RuleService } from "../services/rule.service.js";
 import {
   ValidateBody,
   ValidateParams,
+  ValidateQuery,
 } from "../decorators/validation.decorator.js";
 import {
   ruleIdSchema,
@@ -12,9 +13,14 @@ import {
   CreateOrUpdateRuleRequest,
 } from "../schemas/rule.schemas.js";
 import {
+  paginationQuerySchema,
+  PaginationQueryRequest,
+} from "../schemas/transaction.schemas.js";
+import {
   ValidatedBodyRequest,
   ValidatedParamsRequest,
   ValidatedRequestWith,
+  ValidatedQueryRequest,
 } from "../types/validated-request.js";
 
 @route("/rules")
@@ -73,11 +79,12 @@ export class RuleController {
   @GET()
   @ValidateParams(ruleIdSchema)
   async getTransactionsByRuleId(
-    req: ValidatedParamsRequest<RuleIdRequest>,
+    req: ValidatedRequestWith<never, RuleIdRequest>,
     res: Response,
   ) {
     const id = req.params.id;
-    const transactions = await this.ruleService.getRulesByTransactionId(id);
-    return res.json(transactions);
+
+    const result = await this.ruleService.getTransactionsByRuleId(id);
+    return res.json(result);
   }
 }

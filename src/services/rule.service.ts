@@ -80,23 +80,15 @@ export class RuleService {
     return rule;
   }
 
-  async getRulesByTransactionId(transactionId: number) {
+  async getTransactionsByRuleId(ruleId: number) {
     return Rule.findAll({
+      where: { id: ruleId },
       include: [
         {
           model: Transaction,
           as: "transactions",
-          where: { id: transactionId },
         },
       ],
     });
-  }
-
-  async getCacheStats() {
-    return await this.cacheService.getStats();
-  }
-
-  async clearCache() {
-    await this.cacheService.clear();
   }
 }

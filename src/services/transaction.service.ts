@@ -6,15 +6,32 @@ import { NotFoundError } from "../types/errors.js";
 import { sequelize } from "../services/database.service.js";
 
 export class TransactionService {
-  getAllTransactions() {
-    return Transaction.findAll({
+  async getAllTransactions(page: number = 1, limit: number = 10) {
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Transaction.findAndCountAll({
       include: [
         {
           model: Rule,
           as: "rules",
         },
       ],
+      limit,
+      offset,
+      order: [["id", "DESC"]], // Most recent first
     });
+
+    return {
+      data: rows,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit),
+        hasNext: page < Math.ceil(count / limit),
+        hasPrev: page > 1,
+      },
+    };
   }
 
   async getTransactionById(id: number) {
@@ -121,8 +138,14 @@ export class TransactionService {
     }
   }
 
-  getTransactionsByRuleId(ruleId: number) {
-    return Transaction.findAll({
+  async getTransactionsByRuleId(
+    ruleId: number,
+    page: number = 1,
+    limit: number = 10,
+  ) {
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Transaction.findAndCountAll({
       include: [
         {
           model: Rule,
@@ -130,6 +153,21 @@ export class TransactionService {
           where: { id: ruleId },
         },
       ],
+      limit,
+      offset,
+      order: [["id", "DESC"]], // Most recent first
     });
+
+    return {
+      data: rows,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit),
+        hasNext: page < Math.ceil(count / limit),
+        hasPrev: page > 1,
+      },
+    };
   }
 }

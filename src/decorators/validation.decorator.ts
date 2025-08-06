@@ -23,8 +23,12 @@ export function ValidateRequest(
       // Validate and transform the request data
       const validatedData = schema.parse(req[type]);
 
-      // Cast the validated data back to the request
-      req[type] = validatedData;
+      if (type === "query") {
+        // TODO: the req.query is readonly, so we can't assign to it
+        // req.query = validatedData;
+      } else {
+        req[type] = validatedData;
+      }
 
       // If validation passes, call the original method
       return await originalMethod.call(this, req, res, next);

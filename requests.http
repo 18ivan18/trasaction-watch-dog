@@ -48,15 +48,23 @@ DELETE http://localhost:3000/rules/3
 
 ###
 
-# Get transactions by rule ID
+# Get transactions by rule ID (with pagination)
 GET http://localhost:3000/rules/1/transactions
 
 ###
 
 ### Transaction Endpoints ###
 
-# Get all transactions
+# Get all transactions (with pagination)
 GET http://localhost:3000/transactions
+###
+# Get transactions with pagination parameters
+GET http://localhost:3000/transactions?page=1&limit=50
+
+###
+
+# Get second page with 10 items per page
+GET http://localhost:3000/transactions?page=2&limit=10
 
 ###
 
@@ -110,5 +118,11 @@ Content-Type: application/json
 
 ### 
 
-# Get transactions by rule ID
-GET http://localhost:3000/transactions/rule/1 
+# Get transactions by rule ID (with pagination)
+GET http://localhost:3000/transactions/rule/1
+###
+# Get transactions by rule ID with pagination parameters
+GET http://localhost:3000/transactions/rule/1?page=1&limit=5
+
+# Get second page of transactions for rule ID 1
+GET http://localhost:3000/transactions/rule/1?page=2&limit=10 

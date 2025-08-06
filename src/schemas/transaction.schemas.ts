@@ -1,5 +1,19 @@
 import { z } from "zod";
 
+// Pagination query parameters schema
+export const paginationQuerySchema = z.object({
+  page: z
+    .string()
+    .regex(/^\d+$/, "Page must be a number")
+    .transform(Number)
+    .optional(),
+  limit: z
+    .string()
+    .regex(/^\d+$/, "Limit must be a number")
+    .transform(Number)
+    .optional(),
+});
+
 // Single transaction schema
 export const transactionSchema = z.object({
   hash: z
@@ -40,3 +54,4 @@ export type BatchInsertTransactionsRequest = z.infer<
   typeof batchInsertTransactionsSchema
 >;
 export type TransactionIdRequest = z.infer<typeof transactionIdSchema>;
+export type PaginationQueryRequest = z.infer<typeof paginationQuerySchema>;
