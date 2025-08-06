@@ -1,4 +1,4 @@
-import { GET, POST, PUT, DELETE, route } from "awilix-express";
+import { DELETE, GET, POST, PUT, route } from "awilix-express";
 import { Request, Response } from "express";
 import { RuleService } from "../services/rule.service.js";
 import {
@@ -54,24 +54,11 @@ export class RuleController {
   }
 
   @route("/:id")
-  @PUT()
-  @ValidateBody(createOrUpdateRuleSchema)
-  @ValidateParams(ruleIdSchema)
-  async updateRule(
-    req: ValidatedRequestWith<CreateOrUpdateRuleRequest, RuleIdRequest>,
-    res: Response,
-  ) {
-    const id = req.params.id;
-    const rule = await this.ruleService.updateRule(id, req.body);
-    return res.json(rule);
-  }
-
-  @route("/:id")
   @DELETE()
   @ValidateParams(ruleIdSchema)
   async deleteRule(req: ValidatedParamsRequest<RuleIdRequest>, res: Response) {
     const id = req.params.id;
-    const result = await this.ruleService.deleteRule(id);
+    const result = await this.ruleService.deactivateRule(id);
     return res.json(result);
   }
 

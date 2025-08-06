@@ -20,8 +20,10 @@ export class RuleService {
       return cachedRules;
     }
 
-    // If not in cache, fetch from database
-    const rules = await Rule.findAll();
+    // If not in cache, fetch from database - only active rules
+    const rules = await Rule.findAll({
+      where: { isActive: true },
+    });
 
     // Store in cache
     await this.cacheService.set(
@@ -34,7 +36,9 @@ export class RuleService {
   }
 
   async getRuleById(id: number) {
-    const rule = await Rule.findByPk(id);
+    const rule = await Rule.findOne({
+      where: { id, isActive: true },
+    });
 
     if (!rule) {
       throw new NotFoundError("Rule", id);
@@ -53,28 +57,19 @@ export class RuleService {
     return rule;
   }
 
-  async updateRule(id: number, ruleData: CreateOrUpdateRuleRequest) {
-    const [, ruleId] = await Rule.update(ruleData, {
-      where: { id },
-      returning: true,
+  async deactivateRule(id: number) {
+    const rule = await Rule.findOne({
+      where: { id, isActive: true },
     });
-
-    // Invalidate cache after updating a rule
-    await this.cacheService.invalidatePattern("rules");
-
-    return this.getRuleById(ruleId as any);
-  }
-
-  async deleteRule(id: number) {
-    const rule = await Rule.findByPk(id);
 
     if (!rule) {
       throw new NotFoundError("Rule", id);
     }
 
-    await rule.destroy();
+    // Soft delete by setting isActive to false
+    await rule.update({ isActive: false });
 
-    // Invalidate cache after deleting a rule
+    // Invalidate cache after soft deleting a rule
     await this.cacheService.invalidatePattern("rules");
 
     return rule;
@@ -82,7 +77,7 @@ export class RuleService {
 
   async getTransactionsByRuleId(ruleId: number) {
     return Rule.findAll({
-      where: { id: ruleId },
+      where: { id: ruleId, isActive: true },
       include: [
         {
           model: Transaction,

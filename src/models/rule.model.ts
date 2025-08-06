@@ -20,6 +20,7 @@ export class Rule extends Model<
   declare gasPrice?: number;
   declare gasLimit?: number;
   declare blockDelay: number;
+  declare isActive: boolean;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -69,6 +70,11 @@ Rule.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
     },
     createdAt: {
       type: DataTypes.DATE,
