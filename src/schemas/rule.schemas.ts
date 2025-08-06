@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Rule creation schema - at least one property must be provided
-export const createRuleSchema = z
+export const createOrUpdateRuleSchema = z
   .object({
     fromAddress: z
       .string()
@@ -11,10 +11,11 @@ export const createRuleSchema = z
       .string()
       .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address")
       .optional(),
-    value: z.string().optional(),
+    valueFrom: z.number().optional(),
+    valueTo: z.number().optional(),
     nonce: z.number().int().positive().optional(),
-    gasPrice: z.string().optional(),
-    gasLimit: z.string().optional(),
+    gasPrice: z.number().optional(),
+    gasLimit: z.number().optional(),
   })
   .refine(
     (data) => {
@@ -26,23 +27,8 @@ export const createRuleSchema = z
       message: "At least one property must be provided",
       path: ["fromAddress"], // This will show the error on the first field
     },
-  );
-
-// Rule update schema
-export const updateRuleSchema = z.object({
-  fromAddress: z
-    .string()
-    .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address")
-    .optional(),
-  toAddress: z
-    .string()
-    .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address")
-    .optional(),
-  value: z.string().optional(),
-  nonce: z.number().int().positive().optional(),
-  gasPrice: z.string().optional(),
-  gasLimit: z.string().optional(),
-});
+  )
+  .strict();
 
 // Rule ID parameter schema
 export const ruleIdSchema = z.object({
@@ -50,6 +36,7 @@ export const ruleIdSchema = z.object({
 });
 
 // Type exports for TypeScript
-export type CreateRuleRequest = z.infer<typeof createRuleSchema>;
-export type UpdateRuleRequest = z.infer<typeof updateRuleSchema>;
+export type CreateOrUpdateRuleRequest = z.infer<
+  typeof createOrUpdateRuleSchema
+>;
 export type RuleIdRequest = z.infer<typeof ruleIdSchema>;

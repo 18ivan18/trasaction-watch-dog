@@ -6,12 +6,10 @@ import {
   ValidateParams,
 } from "../decorators/validation.decorator.js";
 import {
-  createRuleSchema,
-  updateRuleSchema,
   ruleIdSchema,
   RuleIdRequest,
-  CreateRuleRequest,
-  UpdateRuleRequest,
+  createOrUpdateRuleSchema,
+  CreateOrUpdateRuleRequest,
 } from "../schemas/rule.schemas.js";
 import {
   ValidatedBodyRequest,
@@ -23,7 +21,7 @@ import {
 export class RuleController {
   constructor(private readonly ruleService: RuleService) {}
 
-  @route("/all")
+  @route("")
   @GET()
   async getAllRules(_req: Request, res: Response) {
     const rules = await this.ruleService.getAllRules();
@@ -40,9 +38,9 @@ export class RuleController {
   }
 
   @POST()
-  @ValidateBody(createRuleSchema)
+  @ValidateBody(createOrUpdateRuleSchema)
   async createRule(
-    req: ValidatedBodyRequest<CreateRuleRequest>,
+    req: ValidatedBodyRequest<CreateOrUpdateRuleRequest>,
     res: Response,
   ) {
     const rule = await this.ruleService.createRule(req.body);
@@ -51,10 +49,10 @@ export class RuleController {
 
   @route("/:id")
   @PUT()
-  @ValidateBody(updateRuleSchema)
+  @ValidateBody(createOrUpdateRuleSchema)
   @ValidateParams(ruleIdSchema)
   async updateRule(
-    req: ValidatedRequestWith<UpdateRuleRequest, RuleIdRequest>,
+    req: ValidatedRequestWith<CreateOrUpdateRuleRequest, RuleIdRequest>,
     res: Response,
   ) {
     const id = req.params.id;

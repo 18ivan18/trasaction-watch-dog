@@ -21,7 +21,7 @@ import { RuleIdRequest, ruleIdSchema } from "../schemas/rule.schemas.js";
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
-  @route("/all")
+  @route("")
   @GET()
   async getAllTransactions(_req: Request, res: Response) {
     const transactions = await this.transactionService.getAllTransactions();

@@ -6,6 +6,7 @@ import {
 } from "sequelize";
 import { sequelize } from "../services/database.service.js";
 
+export type RuleType = InferAttributes<Rule>;
 export class Rule extends Model<
   InferAttributes<Rule>,
   InferCreationAttributes<Rule>
@@ -13,10 +14,12 @@ export class Rule extends Model<
   declare id: number;
   declare fromAddress?: string;
   declare toAddress?: string;
-  declare value?: string;
+  declare valueFrom?: number;
+  declare valueTo?: number;
   declare nonce?: number;
-  declare gasPrice?: string;
-  declare gasLimit?: string;
+  declare gasPrice?: number;
+  declare gasLimit?: number;
+  declare blockDelay: number;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -42,8 +45,12 @@ Rule.init(
         is: /^0x[a-fA-F0-9]{40}$/,
       },
     },
-    value: {
-      type: DataTypes.STRING,
+    valueFrom: {
+      type: DataTypes.BIGINT,
+      allowNull: true,
+    },
+    valueTo: {
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
     nonce: {
@@ -51,12 +58,17 @@ Rule.init(
       allowNull: true,
     },
     gasPrice: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: true,
     },
     gasLimit: {
-      type: DataTypes.STRING,
+      type: DataTypes.BIGINT,
       allowNull: true,
+    },
+    blockDelay: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0,
     },
     createdAt: {
       type: DataTypes.DATE,

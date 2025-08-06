@@ -192,20 +192,95 @@ Get all transactions associated with a specific rule.
    redis-server
    ```
 
-4. Configure environment variables (optional):
+4. Configure environment variables:
 
    ```bash
-   # Copy example environment file
-   cp .env.example .env
+   # Create .env file
+   touch .env
 
-   # Edit .env file to customize Redis URL if needed
+   # Add the following environment variables:
    REDIS_URL=redis://localhost:6379
+   INFURA_PROJECT_ID=your_infura_project_id_here
+   MONITOR_ENABLED=false
+   API_BASE_URL=http://localhost:3000
    ```
 
 5. Start the development server:
    ```bash
    npm run dev
    ```
+
+## Ethereum Transaction Monitor
+
+The application includes a real-time Ethereum transaction monitor that:
+
+- Listens to new blocks on the Ethereum mainnet
+- Batches transactions into groups of 200
+- Spawns worker processes to process each batch
+- Matches transactions against configured rules
+- Automatically inserts matching transactions with their rule associations
+
+### Monitor Features
+
+- **Real-time Block Monitoring**: Uses Infura to listen for new Ethereum blocks
+- **Batch Processing**: Groups transactions into batches of 200 for efficient processing
+- **Worker Processes**: Each batch is processed in a separate child process
+- **Rule Matching**: Automatically matches transactions against all configured rules
+- **Batch Insertion**: Efficiently inserts matching transactions with their rule associations
+
+### Running the Monitor
+
+#### Option 1: Run monitor with API server
+
+```bash
+# Start both API server and monitor
+npm run monitor:dev
+```
+
+#### Option 2: Run monitor separately
+
+```bash
+# Start API server
+npm run dev
+
+# In another terminal, start monitor
+npm run monitor
+```
+
+### Monitor Configuration
+
+Set the following environment variables:
+
+- `INFURA_PROJECT_ID`: Your Infura project ID (required)
+- `MONITOR_ENABLED`: Set to "true" to enable monitor with API server
+- `API_BASE_URL`: Base URL for the API (default: http://localhost:3000)
+
+### Monitor Process Flow
+
+1. **Block Detection**: Monitor listens for new Ethereum blocks
+2. **Transaction Extraction**: Extracts all transactions from each block
+3. **Batching**: Groups transactions into batches of 200
+4. **Worker Spawning**: Spawns a child process for each batch
+5. **Rule Fetching**: Worker fetches all rules from the API
+6. **Rule Matching**: Worker matches each transaction against all rules
+7. **Batch Insertion**: Worker inserts matching transactions with rule associations
+
+### Worker Process
+
+Each worker process:
+
+1. Receives transaction data via stdin
+2. Fetches all rules from the API using axios
+3. Matches each transaction against all rules
+4. Batch inserts matching transactions with their rule associations
+5. Reports results and exits
+
+### Performance Considerations
+
+- **Batch Size**: Configurable batch size (default: 200 transactions)
+- **Parallel Processing**: Each batch runs in a separate process
+- **Error Handling**: Graceful error handling and logging
+- **Resource Management**: Automatic cleanup of worker processes
 
 ## Database
 

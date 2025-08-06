@@ -1,7 +1,7 @@
 ### Rule Endpoints ###
 
 # Get all rules
-GET http://localhost:3000/rules/all
+GET http://localhost:3000/rules
 
 ### 
 
@@ -14,10 +14,8 @@ POST http://localhost:3000/rules
 Content-Type: application/json
 
 {
-  "fromAddress": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6",
-  "toAddress": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b7",
-  "value": "1000000000000000000",
-  "gasPrice": "20000000000"
+  "valueFrom": 0,
+  "valueTo": 2000000000000000000
 }
 
 ###
@@ -58,7 +56,7 @@ GET http://localhost:3000/rules/1/transactions
 ### Transaction Endpoints ###
 
 # Get all transactions
-GET http://localhost:3000/transactions/all
+GET http://localhost:3000/transactions
 
 ###
 

@@ -11,9 +11,9 @@ export class Transaction extends Model<
   InferCreationAttributes<Transaction>
 > {
   declare id: number;
-  declare hash: string;
+  declare hash?: string;
   declare to?: string;
-  declare from: string;
+  declare from?: string;
   declare nonce: number;
   declare gasLimit: string;
   declare gasPrice?: string;
@@ -32,7 +32,7 @@ Transaction.init(
     },
     hash: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
       validate: {
         is: /^0x[a-fA-F0-9]{64}$/,
@@ -47,7 +47,7 @@ Transaction.init(
     },
     from: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       validate: {
         is: /^0x[a-fA-F0-9]{40}$/,
       },
@@ -87,3 +87,5 @@ Transaction.init(
     tableName: "transactions",
   },
 );
+
+export type TransactionType = InferAttributes<Transaction>;

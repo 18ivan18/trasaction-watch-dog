@@ -2,12 +2,18 @@ import { z } from "zod";
 
 // Single transaction schema
 export const transactionSchema = z.object({
-  hash: z.string().regex(/^0x[a-fA-F0-9]{64}$/, "Invalid transaction hash"),
+  hash: z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{64}$/, "Invalid transaction hash")
+    .optional(),
   to: z
     .string()
     .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address")
+    .nullish(),
+  from: z
+    .string()
+    .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address")
     .optional(),
-  from: z.string().regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address"),
   nonce: z.number().int().nonnegative(),
   gasLimit: z.string(),
   gasPrice: z.string().optional(),

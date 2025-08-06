@@ -1,9 +1,6 @@
 import { Rule } from "../models/rule.model.js";
 import { Transaction } from "../models/transaction.model.js";
-import type {
-  CreateRuleRequest,
-  UpdateRuleRequest,
-} from "../schemas/rule.schemas.js";
+import type { CreateOrUpdateRuleRequest } from "../schemas/rule.schemas.js";
 import { NotFoundError } from "../types/errors.js";
 import { CacheService } from "./cache.service.js";
 
@@ -46,7 +43,7 @@ export class RuleService {
     return rule;
   }
 
-  async createRule(ruleData: CreateRuleRequest) {
+  async createRule(ruleData: CreateOrUpdateRuleRequest) {
     console.log(ruleData);
     const rule = await Rule.create(ruleData as any);
 
@@ -56,7 +53,7 @@ export class RuleService {
     return rule;
   }
 
-  async updateRule(id: number, ruleData: UpdateRuleRequest) {
+  async updateRule(id: number, ruleData: CreateOrUpdateRuleRequest) {
     const [, ruleId] = await Rule.update(ruleData, {
       where: { id },
       returning: true,
