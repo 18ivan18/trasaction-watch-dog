@@ -282,9 +282,77 @@ Each worker process:
 - **Error Handling**: Graceful error handling and logging
 - **Resource Management**: Automatic cleanup of worker processes
 
-## Database
+## Docker Setup
 
-The application uses SQLite as the database. The database file (`database.sqlite`) will be created automatically when you first run the application.
+The application includes Docker Compose configuration for MySQL and Redis services.
+
+### Prerequisites
+
+- Docker and Docker Compose installed on your system
+
+### Environment Configuration
+
+Create a `.env` file in the root directory with the following configuration:
+
+```bash
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=test_user
+DB_PASSWORD=test_password
+DB_NAME=test_db
+
+# Redis Configuration
+REDIS_URL=redis://localhost:6379
+
+# Application Configuration
+NODE_ENV=development
+PORT=3000
+```
+
+### Starting Services
+
+```bash
+# Start MySQL and Redis services
+docker-compose up -d
+
+# Check service status
+docker-compose ps
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+```
+
+### Using NPM Scripts
+
+The project includes convenient npm scripts for Docker management:
+
+```bash
+# Setup environment file
+npm run setup:env
+
+# Start Docker services
+npm run docker:up
+
+# Stop Docker services
+npm run docker:down
+
+# View Docker logs
+npm run docker:logs
+
+# Restart Docker services
+npm run docker:restart
+
+# Test Docker setup
+npm run test:docker
+```
+
+### Database
+
+The application uses MySQL as the database. The database will be created automatically when you first run the application with the Docker services running.
 
 ## Validation
 
