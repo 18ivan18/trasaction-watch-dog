@@ -15,6 +15,7 @@ export const workerDataSchema = z.object({
   blockCount: z.number(),
   blockNumber: z.number(),
   infuraProjectId: z.string(),
+  verboseLogging: z.boolean().optional().default(false),
 });
 
 export type WorkerData = z.infer<typeof workerDataSchema>;
@@ -37,10 +38,14 @@ function filterApplicableRules(
   rules: RuleType[],
   blockCount: number,
 ): RuleType[] {
-  return rules.filter((rule) => {
-    // Only apply rules where the current block count is >= the rule's block delay
-    return blockCount - rule.blockDelay - 1 === 0;
-  });
+  const maximumBlockDelay =
+    rules.sort((a, b) => b.blockDelay - a.blockDelay)[0]?.blockDelay ?? 0;
+
+  if (blockCount - maximumBlockDelay - 1 === 0) {
+    return rules;
+  }
+
+  return [];
 }
 
 async function getAllRules(apiBaseUrl: string) {
@@ -60,6 +65,7 @@ async function main() {
 function matchTransactionToRules(
   transaction: Transaction,
   rules: RuleType[],
+  verboseLogging: boolean,
 ): number[] {
   const matchingRuleIds: number[] = [];
 
@@ -69,17 +75,21 @@ function matchTransactionToRules(
       rule.fromAddress &&
       transaction.from?.toLowerCase() !== rule.fromAddress.toLowerCase()
     ) {
-      console.log(
-        `Transaction ${transaction.hash} does not match rule ${rule.id} for fromAddress`,
-      );
+      if (verboseLogging) {
+        console.log(
+          `Transaction ${transaction.hash} does not match rule ${rule.id} for fromAddress`,
+        );
+      }
       continue;
     }
 
     // Check toAddress
-    if (rule.toAddress && transaction.to && transaction.to !== rule.toAddress) {
-      console.log(
-        `Transaction ${transaction.hash} does not match rule ${rule.id} for toAddress`,
-      );
+    if (rule.toAddress && transaction.to !== rule.toAddress) {
+      if (verboseLogging) {
+        console.log(
+          `Transaction ${transaction.hash} does not match rule ${rule.id} for toAddress`,
+        );
+      }
       continue;
     }
 
@@ -92,33 +102,41 @@ function matchTransactionToRules(
         transaction.value.lte(rule.valueTo)
       )
     ) {
-      console.log(
-        `Transaction ${transaction.hash} does not match rule ${rule.id} for value`,
-      );
+      if (verboseLogging) {
+        console.log(
+          `Transaction ${transaction.hash} does not match rule ${rule.id} for value`,
+        );
+      }
       continue;
     }
 
     // Check nonce
     if (rule.nonce && transaction.nonce !== rule.nonce) {
-      console.log(
-        `Transaction ${transaction.hash} does not match rule ${rule.id} for nonce`,
-      );
+      if (verboseLogging) {
+        console.log(
+          `Transaction ${transaction.hash} does not match rule ${rule.id} for nonce`,
+        );
+      }
       continue;
     }
 
     // Check gasPrice
     if (rule.gasPrice && !transaction.gasPrice?.eq(rule.gasPrice)) {
-      console.log(
-        `Transaction ${transaction.hash} does not match rule ${rule.id} for gasPrice`,
-      );
+      if (verboseLogging) {
+        console.log(
+          `Transaction ${transaction.hash} does not match rule ${rule.id} for gasPrice`,
+        );
+      }
       continue;
     }
 
     // Check gasLimit
     if (rule.gasLimit && !transaction.gasLimit.eq(rule.gasLimit)) {
-      console.log(
-        `Transaction ${transaction.hash} does not match rule ${rule.id} for gasLimit`,
-      );
+      if (verboseLogging) {
+        console.log(
+          `Transaction ${transaction.hash} does not match rule ${rule.id} for gasLimit`,
+        );
+      }
       continue;
     }
 
@@ -166,6 +184,7 @@ async function processBlockTransactions(
     const matchingRuleIds = matchTransactionToRules(
       transaction,
       applicableRules,
+      workerData.verboseLogging,
     );
 
     if (matchingRuleIds.length > 0) {
@@ -197,10 +216,7 @@ async function processBlockTransactions(
 
   // 6. If the maximum block delay is reached, send the block hash to the main thread
   // it'll pop the block from the queue
-  if (
-    applicableRules[0].blockDelay ===
-    allRules.sort((a, b) => b.blockDelay - a.blockDelay)[0].blockDelay
-  ) {
+  if (applicableRules.length > 0) {
     parentPort?.postMessage({ blockNumber: workerData.blockNumber });
   }
 }

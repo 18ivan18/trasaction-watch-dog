@@ -34,6 +34,7 @@ async function processBlock() {
         blockCount: blockQueue.length,
         blockNumber,
         infuraProjectId: INFURA_PROJECT_ID,
+        verboseLogging: process.env.VERBOSE_LOGGING === "true",
       },
     });
 

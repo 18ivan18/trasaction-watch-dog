@@ -110,6 +110,10 @@ The system supports:
    npm run monitor
    ```
 
+## Workflow
+
+The main units are rules and transactions. Each rule consists of several fields of interest like address from, address to, value (from/to range) and so on. Rules can be creates through the REST api. Once a rule is created its automatically used. The monitor script does not need to be reloaded because it fetches all the rules at each block processing so the most recent configuration is always fetched. Rules are not deleted, but rather marked as inactive so the links between transaction and link are still saved in the database. The blocks are placed in a queue and only processed after X block delay where X is the maximum block delay from any rule in the given configuration.
+
 ## API Documentation
 
 Once the server is running, you can access the interactive API documentation at:
@@ -242,7 +246,7 @@ The application follows a clean architecture pattern with:
 
 ### Known Issues
 
-- Rules are not correctly evaluated when there are many rules with different blockDelay, e.g. there's a rule with `blockDelay: 1` and rule with `blockDelay: 2`, the first will only run in the beginning.
+- [x] Rules are not correctly evaluated when there are many rules with different blockDelay, e.g. there's a rule with `blockDelay: 1` and rule with `blockDelay: 2`, the first will only run in the beginning.
 
 ### Planned improvements
 

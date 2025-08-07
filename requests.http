@@ -14,8 +14,8 @@ POST http://localhost:3000/rules
 Content-Type: application/json
 
 {
-  "fromAddress": "0xdadB0d80178819F2319190D340ce9A924f783711",
-  "blockDelay": 3
+  "toAddress": "0x388C818CA8B9251b393131C08a736A67ccB19297",
+  "blockDelay": 4
 }
 
 ###
@@ -108,7 +108,7 @@ Content-Type: application/json
 ### 
 
 # Get transactions by rule ID (with pagination)
-GET http://localhost:3000/transactions/rule/1
+GET http://localhost:3000/transactions/rule/2
 ###
 # Get transactions by rule ID with pagination parameters
 GET http://localhost:3000/transactions/rule/1?page=1&limit=5
