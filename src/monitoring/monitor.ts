@@ -48,7 +48,7 @@ export function startBlockMonitor() {
   provider.on("block", async (blockNumber) => {
     console.log(`Processing block ${blockNumber}`);
     blockQueue.push(blockNumber);
-    console.log(blockQueue);
+    console.log({ blockQueue });
     await processBlock();
   });
 }

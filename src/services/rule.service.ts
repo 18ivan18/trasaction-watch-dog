@@ -48,7 +48,6 @@ export class RuleService {
   }
 
   async createRule(ruleData: CreateOrUpdateRuleRequest) {
-    console.log(ruleData);
     const rule = await Rule.create(ruleData as any);
 
     // Invalidate cache after creating a new rule

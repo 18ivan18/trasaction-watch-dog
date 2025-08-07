@@ -210,10 +210,11 @@ export class TransactionController {
     req: ValidatedBodyRequest<BatchInsertTransactionsRequest>,
     res: Response,
   ) {
-    const result = await this.transactionService.batchInsertTransactions(
-      req.body,
-    );
-    return res.status(201).json(result);
+    await this.transactionService.batchInsertTransactions(req.body);
+    return res.status(201).json({
+      message: "Transactions created successfully",
+      count: req.body.transactions.length,
+    });
   }
 
   /**
