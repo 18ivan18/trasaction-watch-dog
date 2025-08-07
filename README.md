@@ -246,7 +246,7 @@ The application follows a clean architecture pattern with:
 
 ### Known Issues
 
-- [x] Rules are not correctly evaluated when there are many rules with different blockDelay, e.g. there's a rule with `blockDelay: 1` and rule with `blockDelay: 2`, the first will only run in the beginning.
+- [x] Rules are not correctly evaluated when there are many rules with different blockDelay, e.g. there's a rule with `blockDelay: 1` and rule with `blockDelay: 2`, the first will only run in the beginning. FIXED
 
 ### Planned improvements
 
