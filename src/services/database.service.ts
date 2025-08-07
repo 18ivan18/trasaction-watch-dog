@@ -1,16 +1,20 @@
 import { Sequelize } from "sequelize";
 
 export const sequelize = new Sequelize({
+  database: process.env.DB_NAME,
   dialect: "mysql",
   host: process.env.DB_HOST,
+  logging: false, // Set to console.log to see SQL queries
+  password: process.env.DB_PASSWORD,
   port: parseInt(process.env.DB_PORT ?? "3306"),
   username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  logging: false, // Set to console.log to see SQL queries
 });
 
 export class DatabaseService {
+  async close() {
+    await sequelize.close();
+  }
+
   async initialize() {
     try {
       await sequelize.authenticate();
@@ -23,9 +27,5 @@ export class DatabaseService {
       console.error("Unable to connect to the database:", error);
       throw error;
     }
-  }
-
-  async close() {
-    await sequelize.close();
   }
 }

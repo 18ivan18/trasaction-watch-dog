@@ -112,6 +112,6 @@ GET http://localhost:3000/transactions/rule/1
 ###
 # Get transactions by rule ID with pagination parameters
 GET http://localhost:3000/transactions/rule/1?page=1&limit=5
-
+###
 # Get second page of transactions for rule ID 1
 GET http://localhost:3000/transactions/rule/1?page=2&limit=10 

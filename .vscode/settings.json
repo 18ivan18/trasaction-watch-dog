@@ -1,0 +1,9 @@
+{
+  "eslint.enable": true,
+  "eslint.validate": ["javascript", "typescript"],
+  "eslint.workingDirectories": ["."],
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  }
+}

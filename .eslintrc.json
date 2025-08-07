@@ -1,0 +1,27 @@
+{
+  "extends": [
+    "@typescript-eslint/recommended",
+    "@typescript-eslint/strict-type-checked",
+    "@typescript-eslint/stylistic-type-checked"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint", "perfectionist"],
+  "rules": {
+    "perfectionist/sort-imports": "error",
+    "perfectionist/sort-named-imports": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.spec.ts"],
+      "plugins": ["vitest"],
+      "rules": {
+        "@typescript-eslint/unbound-method": "off"
+      }
+    }
+  ]
+}
