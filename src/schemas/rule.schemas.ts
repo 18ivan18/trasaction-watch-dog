@@ -3,20 +3,20 @@ import { z } from "zod";
 // Rule creation schema - at least one property must be provided
 export const createOrUpdateRuleSchema = z
   .object({
+    blockDelay: z.number().optional(),
     fromAddress: z
       .string()
       .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address")
       .optional(),
+    gasLimit: z.number().optional(),
+    gasPrice: z.number().optional(),
+    nonce: z.number().int().positive().optional(),
     toAddress: z
       .string()
       .regex(/^0x[a-fA-F0-9]{40}$/, "Invalid Ethereum address")
       .optional(),
     valueFrom: z.number().optional(),
     valueTo: z.number().optional(),
-    nonce: z.number().int().positive().optional(),
-    gasPrice: z.number().optional(),
-    gasLimit: z.number().optional(),
-    blockDelay: z.number().optional(),
   })
   .refine(
     (data) => {

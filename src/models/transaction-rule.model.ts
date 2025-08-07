@@ -1,79 +1,80 @@
 import {
   DataTypes,
-  Model,
   type InferAttributes,
   type InferCreationAttributes,
+  Model,
 } from "sequelize";
+
 import { sequelize } from "../services/database.service.js";
-import { Transaction } from "./transaction.model.js";
 import { Rule } from "./rule.model.js";
+import { Transaction } from "./transaction.model.js";
 
 export class TransactionRule extends Model<
   InferAttributes<TransactionRule>,
   InferCreationAttributes<TransactionRule>
 > {
-  declare id: number;
-  declare transactionId: number;
-  declare ruleId: number;
   declare createdAt: Date;
+  declare id: number;
+  declare ruleId: number;
+  declare transactionId: number;
   declare updatedAt: Date;
 }
 
 TransactionRule.init(
   {
+    createdAt: {
+      allowNull: false,
+      type: DataTypes.DATE,
+    },
     id: {
-      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    transactionId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "transactions",
-        key: "id",
-      },
     },
     ruleId: {
-      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: "rules",
         key: "id",
+        model: "rules",
       },
+      type: DataTypes.INTEGER,
     },
-    createdAt: {
-      type: DataTypes.DATE,
+    transactionId: {
       allowNull: false,
+      references: {
+        key: "id",
+        model: "transactions",
+      },
+      type: DataTypes.INTEGER,
     },
     updatedAt: {
-      type: DataTypes.DATE,
       allowNull: false,
+      type: DataTypes.DATE,
     },
   },
   {
-    sequelize,
-    modelName: "TransactionRule",
-    tableName: "transaction_rules",
     indexes: [
       {
-        unique: true,
         fields: ["transactionId", "ruleId"],
+        unique: true,
       },
     ],
+    modelName: "TransactionRule",
+    sequelize,
+    tableName: "transaction_rules",
   },
 );
 
 Transaction.belongsToMany(Rule, {
-  through: TransactionRule,
+  as: "rules",
   foreignKey: "transactionId",
   otherKey: "ruleId",
-  as: "rules",
+  through: TransactionRule,
 });
 
 Rule.belongsToMany(Transaction, {
-  through: TransactionRule,
+  as: "transactions",
   foreignKey: "ruleId",
   otherKey: "transactionId",
-  as: "transactions",
+  through: TransactionRule,
 });

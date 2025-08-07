@@ -249,3 +249,4 @@ The application follows a clean architecture pattern with:
 - type can be changed to human readable enum of values `ETH_TRANSFER, CONTRACT_INTERACTION`
 - even more logging
 - actual tests
+- env variables validation

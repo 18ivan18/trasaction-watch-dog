@@ -16,9 +16,6 @@ export type ValidatedQueryRequest<T> = Omit<Request, "query"> & {
   query: T;
 };
 
-// Helper type to extract the validated type from a Zod schema
-export type ValidatedType<T extends z.ZodSchema> = z.infer<T>;
-
 // Type for combining multiple validations
 export type ValidatedRequestWith<
   TBody = never,
@@ -29,3 +26,6 @@ export type ValidatedRequestWith<
   params: TParams extends never ? Request["params"] : TParams;
   query: TQuery extends never ? Request["query"] : TQuery;
 };
+
+// Helper type to extract the validated type from a Zod schema
+export type ValidatedType<T extends z.ZodSchema> = z.infer<T>;

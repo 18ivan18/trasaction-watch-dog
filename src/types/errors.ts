@@ -1,8 +1,18 @@
-export class NotFoundError extends Error {
+export class ConflictError extends Error {
   public statusCode: number;
-  public resource: string;
 
-  constructor(resource: string, id?: string | number) {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConflictError";
+    this.statusCode = 409;
+  }
+}
+
+export class NotFoundError extends Error {
+  public resource: string;
+  public statusCode: number;
+
+  constructor(resource: string, id?: number | string) {
     const message = id
       ? `${resource} with id ${id} not found`
       : `${resource} not found`;
@@ -14,23 +24,13 @@ export class NotFoundError extends Error {
 }
 
 export class ValidationError extends Error {
-  public statusCode: number;
   public field?: string;
+  public statusCode: number;
 
   constructor(message: string, field?: string) {
     super(message);
     this.name = "ValidationError";
     this.statusCode = 400;
     this.field = field;
-  }
-}
-
-export class ConflictError extends Error {
-  public statusCode: number;
-
-  constructor(message: string) {
-    super(message);
-    this.name = "ConflictError";
-    this.statusCode = 409;
   }
 }

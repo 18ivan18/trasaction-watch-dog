@@ -1,89 +1,90 @@
 import {
   DataTypes,
-  Model,
   type InferAttributes,
   type InferCreationAttributes,
+  Model,
 } from "sequelize";
+
 import { sequelize } from "../services/database.service.js";
 
 export class Transaction extends Model<
   InferAttributes<Transaction>,
   InferCreationAttributes<Transaction>
 > {
-  declare id: number;
-  declare hash?: string;
-  declare to?: string;
+  declare createdAt: Date;
   declare from?: string;
-  declare nonce: number;
   declare gasLimit: string;
   declare gasPrice?: string;
-  declare value: string;
+  declare hash?: string;
+  declare id: number;
+  declare nonce: number;
+  declare to?: string;
   declare type?: number;
-  declare createdAt: Date;
   declare updatedAt: Date;
+  declare value: string;
 }
 
 Transaction.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+    createdAt: {
+      allowNull: false,
+      type: DataTypes.DATE,
+    },
+    from: {
+      allowNull: true,
+      type: DataTypes.STRING,
+      validate: {
+        is: /^0x[a-fA-F0-9]{40}$/,
+      },
+    },
+    gasLimit: {
+      allowNull: false,
+      type: DataTypes.STRING,
+    },
+    gasPrice: {
+      allowNull: true,
+      type: DataTypes.STRING,
     },
     hash: {
-      type: DataTypes.STRING,
       allowNull: true,
+      type: DataTypes.STRING,
       unique: true,
       validate: {
         is: /^0x[a-fA-F0-9]{64}$/,
       },
     },
-    to: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        is: /^0x[a-fA-F0-9]{40}$/,
-      },
-    },
-    from: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        is: /^0x[a-fA-F0-9]{40}$/,
-      },
+    id: {
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER,
     },
     nonce: {
+      allowNull: false,
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
-    gasLimit: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    gasPrice: {
-      type: DataTypes.STRING,
+    to: {
       allowNull: true,
-    },
-    value: {
       type: DataTypes.STRING,
-      allowNull: false,
+      validate: {
+        is: /^0x[a-fA-F0-9]{40}$/,
+      },
     },
     type: {
-      type: DataTypes.INTEGER,
       allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: false,
+      type: DataTypes.INTEGER,
     },
     updatedAt: {
-      type: DataTypes.DATE,
       allowNull: false,
+      type: DataTypes.DATE,
+    },
+    value: {
+      allowNull: false,
+      type: DataTypes.STRING,
     },
   },
   {
-    sequelize,
     modelName: "Transaction",
+    sequelize,
     tableName: "transactions",
   },
 );

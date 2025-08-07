@@ -1,27 +1,28 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ZodError } from "zod";
+
 import {
+  ConflictError,
   NotFoundError,
   ValidationError,
-  ConflictError,
 } from "../types/errors.js";
 
 export const errorHandler = (
   error: Error,
   req: Request,
   res: Response,
-  next: NextFunction,
+  _next: NextFunction,
 ) => {
   console.error("Error:", error);
 
   // Handle Zod validation errors
   if (error instanceof ZodError) {
     return res.status(400).json({
-      error: "Validation failed",
       details: error.issues.map((issue) => ({
         field: issue.path.join("."),
         message: issue.message,
       })),
+      error: "Validation failed",
     });
   }
 
@@ -37,8 +38,8 @@ export const errorHandler = (
   if (error instanceof ValidationError) {
     return res.status(error.statusCode).json({
       error: "Validation Error",
-      message: error.message,
       field: error.field,
+      message: error.message,
     });
   }
 

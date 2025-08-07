@@ -14,7 +14,7 @@ export class CacheService {
       this.isConnected = true;
     });
 
-    this.client.on("error", (err) => {
+    this.client.on("error", () => {
       // console.error("Redis Client Error", err);
       this.isConnected = false;
     });
@@ -25,43 +25,23 @@ export class CacheService {
     });
 
     // Initialize connection
-    this.client.connect().catch((error) => {
+    this.client.connect().catch((error: unknown) => {
       console.error("Failed to connect to Redis:", error);
       this.isConnected = false;
     });
   }
 
-  async set<T>(key: string, value: T, ttlMs: number = 300000): Promise<void> {
+  async clear(): Promise<void> {
     if (!this.isConnected) {
-      // console.log("Redis not connected, skipping cache set");
+      // console.log("Redis not connected, skipping cache clear");
       return;
     }
 
     try {
-      const serializedValue = JSON.stringify(value);
-      await this.client.setEx(key, Math.floor(ttlMs / 1000), serializedValue);
+      await this.client.flushDb();
     } catch (error) {
-      console.error("Redis set error:", error);
+      console.error("Redis clear error:", error);
       this.isConnected = false;
-    }
-  }
-
-  async get<T>(key: string): Promise<T | null> {
-    if (!this.isConnected) {
-      // console.log("Redis not connected, skipping cache get");
-      return null;
-    }
-
-    try {
-      const value = await this.client.get(key);
-      if (!value) {
-        return null;
-      }
-      return JSON.parse(value) as T;
-    } catch (error) {
-      console.error("Redis get error:", error);
-      this.isConnected = false;
-      return null;
     }
   }
 
@@ -81,17 +61,37 @@ export class CacheService {
     }
   }
 
-  async clear(): Promise<void> {
+  async disconnect(): Promise<void> {
     if (!this.isConnected) {
-      // console.log("Redis not connected, skipping cache clear");
+      // console.log("Redis not connected, skipping disconnect");
       return;
     }
 
     try {
-      await this.client.flushDb();
-    } catch (error) {
-      console.error("Redis clear error:", error);
+      await this.client.quit();
       this.isConnected = false;
+    } catch (error) {
+      console.error("Redis disconnect error:", error);
+      this.isConnected = false;
+    }
+  }
+
+  async get<T>(key: string): Promise<null | T> {
+    if (!this.isConnected) {
+      // console.log("Redis not connected, skipping cache get");
+      return null;
+    }
+
+    try {
+      const value = await this.client.get(key);
+      if (!value) {
+        return null;
+      }
+      return JSON.parse(value) as T;
+    } catch (error) {
+      console.error("Redis get error:", error);
+      this.isConnected = false;
+      return null;
     }
   }
 
@@ -112,40 +112,17 @@ export class CacheService {
     }
   }
 
-  async getStats(): Promise<{
-    size: number;
-    keys: string[];
-    connected: boolean;
-  }> {
+  async set(key: string, value: unknown, ttlMs = 300_000): Promise<void> {
     if (!this.isConnected) {
-      return { size: 0, keys: [], connected: false };
-    }
-
-    try {
-      const keys = await this.client.keys("*");
-      return {
-        size: keys.length,
-        keys,
-        connected: true,
-      };
-    } catch (error) {
-      console.error("Redis getStats error:", error);
-      this.isConnected = false;
-      return { size: 0, keys: [], connected: false };
-    }
-  }
-
-  async disconnect(): Promise<void> {
-    if (!this.isConnected) {
-      // console.log("Redis not connected, skipping disconnect");
+      // console.log("Redis not connected, skipping cache set");
       return;
     }
 
     try {
-      await this.client.quit();
-      this.isConnected = false;
+      const serializedValue = JSON.stringify(value);
+      await this.client.setEx(key, Math.floor(ttlMs / 1000), serializedValue);
     } catch (error) {
-      console.error("Redis disconnect error:", error);
+      console.error("Redis set error:", error);
       this.isConnected = false;
     }
   }

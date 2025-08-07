@@ -1,9 +1,10 @@
 import {
   DataTypes,
-  Model,
   type InferAttributes,
   type InferCreationAttributes,
+  Model,
 } from "sequelize";
+
 import { sequelize } from "../services/database.service.js";
 
 export type RuleType = InferAttributes<Rule>;
@@ -11,83 +12,83 @@ export class Rule extends Model<
   InferAttributes<Rule>,
   InferCreationAttributes<Rule>
 > {
-  declare id: number;
+  declare blockDelay: number;
+  declare createdAt: Date;
   declare fromAddress?: string;
+  declare gasLimit?: number;
+  declare gasPrice?: number;
+  declare id: number;
+  declare isActive: boolean;
+  declare nonce?: number;
   declare toAddress?: string;
+  declare updatedAt: Date;
   declare valueFrom?: number;
   declare valueTo?: number;
-  declare nonce?: number;
-  declare gasPrice?: number;
-  declare gasLimit?: number;
-  declare blockDelay: number;
-  declare isActive: boolean;
-  declare createdAt: Date;
-  declare updatedAt: Date;
 }
 
 Rule.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    fromAddress: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        is: /^0x[a-fA-F0-9]{40}$/,
-      },
-    },
-    toAddress: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        is: /^0x[a-fA-F0-9]{40}$/,
-      },
-    },
-    valueFrom: {
-      type: DataTypes.BIGINT,
-      allowNull: true,
-    },
-    valueTo: {
-      type: DataTypes.BIGINT,
-      allowNull: true,
-    },
-    nonce: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
-    gasPrice: {
-      type: DataTypes.BIGINT,
-      allowNull: true,
-    },
-    gasLimit: {
-      type: DataTypes.BIGINT,
-      allowNull: true,
-    },
     blockDelay: {
-      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0,
-    },
-    isActive: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
+      type: DataTypes.INTEGER,
     },
     createdAt: {
-      type: DataTypes.DATE,
       allowNull: false,
+      type: DataTypes.DATE,
+    },
+    fromAddress: {
+      allowNull: true,
+      type: DataTypes.STRING,
+      validate: {
+        is: /^0x[a-fA-F0-9]{40}$/,
+      },
+    },
+    gasLimit: {
+      allowNull: true,
+      type: DataTypes.BIGINT,
+    },
+    gasPrice: {
+      allowNull: true,
+      type: DataTypes.BIGINT,
+    },
+    id: {
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+    },
+    isActive: {
+      allowNull: false,
+      defaultValue: true,
+      type: DataTypes.BOOLEAN,
+    },
+    nonce: {
+      allowNull: true,
+      type: DataTypes.INTEGER,
+    },
+    toAddress: {
+      allowNull: true,
+      type: DataTypes.STRING,
+      validate: {
+        is: /^0x[a-fA-F0-9]{40}$/,
+      },
     },
     updatedAt: {
-      type: DataTypes.DATE,
       allowNull: false,
+      type: DataTypes.DATE,
+    },
+    valueFrom: {
+      allowNull: true,
+      type: DataTypes.BIGINT,
+    },
+    valueTo: {
+      allowNull: true,
+      type: DataTypes.BIGINT,
     },
   },
   {
-    sequelize,
     modelName: "Rule",
+    sequelize,
     tableName: "rules",
   },
 );

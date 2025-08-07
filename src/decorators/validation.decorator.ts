@@ -1,21 +1,35 @@
+import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
-import { Request, Response, NextFunction } from "express";
+
+// Convenience decorators for specific validation types
+export function ValidateBody(schema: z.ZodType) {
+  return ValidateRequest(schema, "body");
+}
+
+export function ValidateParams(schema: z.ZodType) {
+  return ValidateRequest(schema, "params");
+}
+
+export function ValidateQuery(schema: z.ZodType) {
+  return ValidateRequest(schema, "query");
+}
 
 // Decorator factory that accepts a validation schema
 export function ValidateRequest(
-  schema: z.ZodSchema,
+  schema: z.ZodType,
   type: "body" | "params" | "query",
 ) {
   return function (
-    target: any,
+    target: unknown,
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
     // Store the original method
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const originalMethod = descriptor.value;
 
     // Replace the method with validation wrapper
-    descriptor.value = async function (
+    descriptor.value = function (
       req: Request,
       res: Response,
       next: NextFunction,
@@ -31,22 +45,10 @@ export function ValidateRequest(
       }
 
       // If validation passes, call the original method
-      return await originalMethod.call(this, req, res, next);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      return originalMethod.call(this, req, res, next);
     };
 
     return descriptor;
   };
-}
-
-// Convenience decorators for specific validation types
-export function ValidateBody(schema: z.ZodSchema) {
-  return ValidateRequest(schema, "body");
-}
-
-export function ValidateParams(schema: z.ZodSchema) {
-  return ValidateRequest(schema, "params");
-}
-
-export function ValidateQuery(schema: z.ZodSchema) {
-  return ValidateRequest(schema, "query");
 }

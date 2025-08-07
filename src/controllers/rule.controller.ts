@@ -1,26 +1,21 @@
-import { DELETE, GET, POST, PUT, route } from "awilix-express";
+import { DELETE, GET, POST, route } from "awilix-express";
 import { Request, Response } from "express";
-import { RuleService } from "../services/rule.service.js";
+
 import {
   ValidateBody,
   ValidateParams,
-  ValidateQuery,
 } from "../decorators/validation.decorator.js";
 import {
-  ruleIdSchema,
-  RuleIdRequest,
-  createOrUpdateRuleSchema,
   CreateOrUpdateRuleRequest,
+  createOrUpdateRuleSchema,
+  RuleIdRequest,
+  ruleIdSchema,
 } from "../schemas/rule.schemas.js";
-import {
-  paginationQuerySchema,
-  PaginationQueryRequest,
-} from "../schemas/transaction.schemas.js";
+import { RuleService } from "../services/rule.service.js";
 import {
   ValidatedBodyRequest,
   ValidatedParamsRequest,
   ValidatedRequestWith,
-  ValidatedQueryRequest,
 } from "../types/validated-request.js";
 
 /**
@@ -33,74 +28,6 @@ import {
 @route("/rules")
 export class RuleController {
   constructor(private readonly ruleService: RuleService) {}
-
-  /**
-   * @swagger
-   * /rules:
-   *   get:
-   *     summary: Get all rules
-   *     description: Retrieve all rules with their associated transactions
-   *     tags: [Rules]
-   *     responses:
-   *       200:
-   *         description: List of all rules
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: array
-   *               items:
-   *                 $ref: '#/components/schemas/Rule'
-   *       500:
-   *         description: Internal server error
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/Error'
-   */
-  @route("")
-  @GET()
-  async getAllRules(_req: Request, res: Response) {
-    const rules = await this.ruleService.getAllRules();
-    return res.json(rules);
-  }
-
-  /**
-   * @swagger
-   * /rules/{id}:
-   *   get:
-   *     summary: Get rule by ID
-   *     description: Retrieve a specific rule by its ID with associated transactions
-   *     tags: [Rules]
-   *     parameters:
-   *       - $ref: '#/components/parameters/RuleId'
-   *     responses:
-   *       200:
-   *         description: Rule details
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/Rule'
-   *       404:
-   *         description: Rule not found
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/Error'
-   *       500:
-   *         description: Internal server error
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/Error'
-   */
-  @route("/:id")
-  @GET()
-  @ValidateParams(ruleIdSchema)
-  async getRuleById(req: ValidatedParamsRequest<RuleIdRequest>, res: Response) {
-    const id = req.params.id;
-    const rule = await this.ruleService.getRuleById(id);
-    return res.json(rule);
-  }
 
   /**
    * @swagger
@@ -183,13 +110,81 @@ export class RuleController {
    *             schema:
    *               $ref: '#/components/schemas/Error'
    */
-  @route("/:id")
   @DELETE()
+  @route("/:id")
   @ValidateParams(ruleIdSchema)
   async deleteRule(req: ValidatedParamsRequest<RuleIdRequest>, res: Response) {
     const id = req.params.id;
     const result = await this.ruleService.deactivateRule(id);
     return res.json(result);
+  }
+
+  /**
+   * @swagger
+   * /rules:
+   *   get:
+   *     summary: Get all rules
+   *     description: Retrieve all rules with their associated transactions
+   *     tags: [Rules]
+   *     responses:
+   *       200:
+   *         description: List of all rules
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 $ref: '#/components/schemas/Rule'
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Error'
+   */
+  @GET()
+  @route("")
+  async getAllRules(_req: Request, res: Response) {
+    const rules = await this.ruleService.getAllRules();
+    return res.json(rules);
+  }
+
+  /**
+   * @swagger
+   * /rules/{id}:
+   *   get:
+   *     summary: Get rule by ID
+   *     description: Retrieve a specific rule by its ID with associated transactions
+   *     tags: [Rules]
+   *     parameters:
+   *       - $ref: '#/components/parameters/RuleId'
+   *     responses:
+   *       200:
+   *         description: Rule details
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Rule'
+   *       404:
+   *         description: Rule not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Error'
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/Error'
+   */
+  @GET()
+  @route("/:id")
+  @ValidateParams(ruleIdSchema)
+  async getRuleById(req: ValidatedParamsRequest<RuleIdRequest>, res: Response) {
+    const id = req.params.id;
+    const rule = await this.ruleService.getRuleById(id);
+    return res.json(rule);
   }
 
   /**
@@ -223,8 +218,8 @@ export class RuleController {
    *             schema:
    *               $ref: '#/components/schemas/Error'
    */
-  @route("/:id/transactions")
   @GET()
+  @route("/:id/transactions")
   @ValidateParams(ruleIdSchema)
   async getTransactionsByRuleId(
     req: ValidatedRequestWith<never, RuleIdRequest>,

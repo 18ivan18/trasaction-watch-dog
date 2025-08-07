@@ -1,26 +1,36 @@
-import z from "zod";
 import axios from "axios";
 import { providers, type Transaction } from "ethers";
 import chunk from "lodash/chunk.js";
-import { parentPort, workerData, isMainThread } from "node:worker_threads";
+import { isMainThread, parentPort, workerData } from "node:worker_threads";
 import { fileURLToPath } from "url";
+import z from "zod";
+
 import type { RuleType } from "../models/rule.model.js";
 import type { BatchInsertTransactionsRequest } from "../schemas/transaction.schemas.js";
 
 export const workerFileName = fileURLToPath(import.meta.url);
 
 export const workerDataSchema = z.object({
-  blockNumber: z.number(),
-  blockCount: z.number(),
-  infuraProjectId: z.string(),
   apiBaseUrl: z.string(),
+  blockCount: z.number(),
+  blockNumber: z.number(),
+  infuraProjectId: z.string(),
 });
 
 export type WorkerData = z.infer<typeof workerDataSchema>;
 
-async function getAllRules(apiBaseUrl: string) {
-  const response = await axios.get<RuleType[]>(`${apiBaseUrl}/rules`);
-  return response.data;
+async function batchInsertTransactions(
+  { transactions }: BatchInsertTransactionsRequest,
+  apiBaseUrl: string,
+) {
+  const batches = chunk(transactions, 100);
+  await Promise.all(
+    batches.map((batch) =>
+      axios.post(`${apiBaseUrl}/transactions/batch`, {
+        transactions: batch,
+      }),
+    ),
+  );
 }
 
 function filterApplicableRules(
@@ -31,6 +41,20 @@ function filterApplicableRules(
     // Only apply rules where the current block count is >= the rule's block delay
     return blockCount - rule.blockDelay - 1 === 0;
   });
+}
+
+async function getAllRules(apiBaseUrl: string) {
+  const response = await axios.get<RuleType[]>(`${apiBaseUrl}/rules`);
+  return response.data;
+}
+
+async function main() {
+  const input = workerDataSchema.parse(workerData);
+  const provider = new providers.InfuraProvider(
+    "mainnet",
+    input.infuraProjectId,
+  );
+  await processBlockTransactions(input, provider, input.apiBaseUrl);
 }
 
 function matchTransactionToRules(
@@ -104,20 +128,6 @@ function matchTransactionToRules(
   return matchingRuleIds;
 }
 
-async function batchInsertTransactions(
-  { transactions }: BatchInsertTransactionsRequest,
-  apiBaseUrl: string,
-) {
-  const batches = chunk(transactions, 100);
-  await Promise.all(
-    batches.map((batch) =>
-      axios.post(`${apiBaseUrl}/transactions/batch`, {
-        transactions: batch,
-      }),
-    ),
-  );
-}
-
 async function processBlockTransactions(
   workerData: WorkerData,
   provider: providers.InfuraProvider,
@@ -160,15 +170,15 @@ async function processBlockTransactions(
 
     if (matchingRuleIds.length > 0) {
       transactionsWithRules.push({
-        hash: transaction.hash,
-        to: transaction.to,
         from: transaction.from,
-        nonce: transaction.nonce,
         gasLimit: transaction.gasLimit.toString(),
         gasPrice: transaction.gasPrice?.toString(),
-        value: transaction.value.toString(),
-        type: transaction.type ?? undefined,
+        hash: transaction.hash,
+        nonce: transaction.nonce,
         ruleIds: matchingRuleIds,
+        to: transaction.to,
+        type: transaction.type ?? undefined,
+        value: transaction.value.toString(),
       });
     }
   }
@@ -196,12 +206,5 @@ async function processBlockTransactions(
 }
 
 if (!isMainThread) {
-  (async () => {
-    const input = workerDataSchema.parse(workerData);
-    const provider = new providers.InfuraProvider(
-      "mainnet",
-      input.infuraProjectId,
-    );
-    await processBlockTransactions(input, provider, input.apiBaseUrl);
-  })();
+  await main();
 }
